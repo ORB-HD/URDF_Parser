@@ -4,8 +4,10 @@
 #include <string>
 #include <map>
 
+#include "urdf/common.h"
 #include "urdf/exception.h"
 #include "urdf/link.h"
+#include "urdf/joint.h"
 
 using namespace std;
 using namespace boost;

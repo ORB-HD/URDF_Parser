@@ -7,6 +7,8 @@ INCLUDE_DIRECTORIES (
   ${CMAKE_CURRENT_SOURCE_DIR}/include/tinyxml
 )
 
+ADD_DEFINITIONS(-DTIXML_USE_STL)
+
 SET( TINYXML_SRCS
   src/tinystr.cpp
   src/tinyxml.cpp

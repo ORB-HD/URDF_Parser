@@ -103,7 +103,7 @@ void UrdfModel::findRoot(const map<string, string> &parent_link_tree) {
 	}
 }
 
-UrdfModel* fromUrdfStr(const std::string& xml_string) {
+UrdfModel* UrdfModel::fromUrdfStr(const std::string& xml_string) {
 	UrdfModel* model = new UrdfModel;
 
 	TiXmlDocument xml_doc;
