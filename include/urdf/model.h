@@ -16,32 +16,37 @@ namespace urdf {
 		string name;
 		Link* root_link;
 
-		int m_numLinks;	//includes parent
-		int m_numJoints;
+		map<string, Link*> link_map;
+		map<string, Joint*> joint_map;
+		map<string, Material*> material_map;
 
-		map<string, Link> links;
-		map<string, Joint> joints;
-		map<string, Material> materials;
+		vector<Link> links;
+		vector<Joint> joints;
+		vector<Material> materials;
 
 
 		const string& getName() const { return name; }
-		const Link* getRoot() const { return root_link; }
+		Link* getRoot() const { return root_link; }
 
-		const Link* getLink(const string& name) const;
-		const Joint* getJoint(const string& name) const;
-		const Material* getMaterial(const string& name) const;
+		Link* getLink(const string& name);
+		Joint* getJoint(const string& name);
+		Material* getMaterial(const string& name);
 
-		void getLinks(vector<const Link*>& linklist) const;
+		void getLinks(vector<Link*>& linklist) const;
 
 		void clear() {
-			m_numLinks=0;
-			m_numJoints = 0;
-
 			name.clear();
-			this->links.clear();
-			this->joints.clear();
-			this->materials.clear();
-			this->root_link = nullptr;
+
+			link_map.clear();
+			links.clear();
+
+			joints.clear();
+			joint_map.clear();
+
+			materials.clear();
+			material_map.clear();
+
+			root_link = nullptr;
 		};
 
 

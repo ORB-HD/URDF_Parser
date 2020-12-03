@@ -4,62 +4,63 @@
 
 using namespace urdf;
 
-const Link* UrdfModel::getLink(const string& name) const {
-	if (links.find(name) == links.end()) {
+Link* UrdfModel::getLink(const string& name) {
+	if (link_map.find(name) == link_map.end()) {
 		return nullptr;
 	} else {
-		return &links.find(name)->second;
+		return link_map.find(name)->second;
 	}
 }
 
-const Joint* UrdfModel::getJoint(const string& name) const {
-	if (joints.find(name) == joints.end()) {
+Joint* UrdfModel::getJoint(const string& name) {
+	if (joint_map.find(name) == joint_map.end()) {
 		return nullptr;
 	} else {
-		return &joints.find(name)->second;
+		return joint_map.find(name)->second;
 	}
 }
 
-const Material* UrdfModel::getMaterial(const string& name) const {
-	if (materials.find(name) == materials.end()) {
+Material* UrdfModel::getMaterial(const string& name) {
+	if (material_map.find(name) == material_map.end()) {
 		return nullptr;
 	} else {
-		return &materials.find(name)->second;
+		return material_map.find(name)->second;
 	}
 }
 
-void UrdfModel::getLinks(vector<const Link*>& linklist) const {
-	for (auto link = links.begin(); link != links.end(); link++) {
-		linklist.push_back(&link->second);
+void UrdfModel::getLinks(vector<Link*>& linklist) const {
+	for (auto link = link_map.begin(); link != link_map.end(); link++) {
+		linklist.push_back(link->second);
 	}
 }
 
 void UrdfModel::initLinkTree(map<string, string>& parent_link_tree) {
-	for (auto joint = joints.begin(); joint != joints.end(); joint++) {
-		string parent_link_name = joint->second.parent_link_name;
-		string child_link_name = joint->second.child_link_name;
+	for (auto joint = joint_map.begin(); joint != joint_map.end(); joint++) {
+		string parent_link_name = joint->second->parent_link_name;
+		string child_link_name = joint->second->child_link_name;
 
 		if (parent_link_name.empty()){
 			ostringstream error_msg;
-			error_msg << "Error while constructing model! Joint [" << joint->second.name
+			error_msg << "Error while constructing model! Joint [" << joint->second->name
 					  << "] is missing a parent link specification.";
 			throw URDFParseError(error_msg.str());
 		}
 		if (child_link_name.empty()) {
 			ostringstream error_msg;
-			error_msg << "Error while constructing model! Joint [" << joint->second.name
+			error_msg << "Error while constructing model! Joint [" << joint->second->name
 					  << "] is missing a child link specification.";
 			throw URDFParseError(error_msg.str());
 		}
 
-		const Link* child_link = getLink(child_link_name);
+		Link* child_link = getLink(child_link_name);
 		if (child_link == nullptr) {
 			ostringstream error_msg;
 			error_msg << "Error while constructing model! Child link [" << child_link_name
 					  << "] of joint [" <<  joint->first << "] not found";
 			throw URDFParseError(error_msg.str());
 		}
-		const Link* parent_link = getLink(parent_link_name);
+
+		Link* parent_link = getLink(parent_link_name);
 		if (parent_link == nullptr) {
 			ostringstream error_msg;
 			error_msg << "Error while constructing model! Parent link [" << parent_link_name
@@ -68,7 +69,7 @@ void UrdfModel::initLinkTree(map<string, string>& parent_link_tree) {
 		}
 
 		child_link->setParentLink(parent_link);
-		child_link->setParentJoint(&joint->second);
+		child_link->setParentJoint(joint->second);
 
 		parent_link->child_joints.push_back(joint->second);
 		parent_link->child_links.push_back(child_link);
@@ -79,23 +80,26 @@ void UrdfModel::initLinkTree(map<string, string>& parent_link_tree) {
 }
 
 void UrdfModel::findRoot(const map<string, string> &parent_link_tree) {
-	for (auto l=links.begin(); l!=links.end(); l++) {
+	for (auto l=link_map.begin(); l!=link_map.end(); l++) {
 		auto parent = parent_link_tree.find(l->first);
 		if (parent == parent_link_tree.end()) {
-			if (!this->root_link) {
+			if (root_link == nullptr) {
 				root_link = getLink(l->first);
 			} else {
-				throw URDFParseError("Two root links found: [" + this->root_link_->name + "] and [" + l->first + "]");
+				ostringstream error_msg;
+				error_msg << "Error! Multiple root links found: (" << root_link->name
+						  << ") and (" + l->first + ")!";
+				throw URDFParseError(error_msg.str());
 			}
 		}
 	}
-	if (!this->root_link) {
-		throw URDFParseError("No root link found. The robot xml is not a valid tree.");
+	if (root_link == nullptr) {
+		throw URDFParseError("Error! No root link found. The urdf does not contain a valid link tree.");
 	}
 }
 
 UrdfModel* fromUrdfStr(const std::string& xml_string) {
-	UrdfModel* model = new URDFModel;
+	UrdfModel* model = new UrdfModel;
 
 	TiXmlDocument xml_doc;
 	xml_doc.Parse(xml_string.c_str());
@@ -123,46 +127,48 @@ UrdfModel* fromUrdfStr(const std::string& xml_string) {
 
 	for (TiXmlElement* material_xml = robot_xml->FirstChildElement("material"); material_xml != nullptr; material_xml = material_xml->NextSiblingElement("material")) {
 		Material material = Material::fromXml(material_xml, false); // material needs to be fully defined here
-		if (model->getMaterial(material->name) != nullptr) {
+		if (model->getMaterial(material.name) != nullptr) {
 			std::ostringstream error_msg;
-			error_msg << "Duplicate materials '" << material->name << "' found!";
+			error_msg << "Duplicate materials '" << material.name << "' found!";
 			throw URDFParseError(error_msg.str());
 		} else {
-			model->materials.insert(make_pair(material->name,material));
+			model->materials.push_back(std::move(material));
+			model->material_map[material.name] = &model->materials[model->materials.size()-1];
 		}
 	}
 
 	for (TiXmlElement* link_xml = robot_xml->FirstChildElement("link"); link_xml != nullptr; link_xml = link_xml->NextSiblingElement("link")) {
 		Link link = Link::fromXml(link_xml);
-		model->m_numLinks++;
+
 		if (model->getLink(link.name) != nullptr) {
 			std::ostringstream error_msg;
 			error_msg << "Error! Duplicate links '" << link.name << "' found!";
 			throw URDFParseError(error_msg.str());
 		} else {
-			// set link visual material
+			// loop over link visual to find the materials
 			if (!link.visuals.empty()) {
-				auto visual = link.visuals[0];
-				if (!visual.material_name.empty()) {
-					//find the correct material in model
-					if (model->getMaterial(visual.material_name)) {
-						visual.material = model->getMaterial( visual.material_name.c_str() );
-					} else {
-						// if no model matrial found use the one defined in the visual
-						if (visual.material) {
-							model->materials.insert(make_pair(visual.material_name, visual.material));
+				for ( auto visual : link.visuals ) {
+					if (!visual.material_name.empty()) {
+						if (model->getMaterial(visual.material_name) != nullptr) {
+							visual.material = *model->getMaterial( visual.material_name.c_str() );
 						} else {
-							// no matrial information available for this visual -> error
-							std::ostringstream error_msg;
-							error_msg << "Error! Link '" << link.name
-									  << "' material '" << visual.material_name
-									  <<" ' undefined!";
-							throw URDFParseError(error_msg.str());
+							// if no model matrial found use the one defined in the visual
+							if (visual.material.has_value()) {
+								model->materials.push_back(visual.material.value());
+							} else {
+								// no matrial information available for this visual -> error
+								std::ostringstream error_msg;
+								error_msg << "Error! Link '" << link.name
+										  << "' material '" << visual.material_name
+										  <<" ' undefined!";
+								throw URDFParseError(error_msg.str());
+							}
 						}
 					}
 				}
 			}
-			model->links.insert(make_pair(link.name,link));
+			model->links.push_back(std::move(link));
+			model->link_map[link.name] = &model->links[model->links.size()-1];
 		}
 	}
 
@@ -173,14 +179,14 @@ UrdfModel* fromUrdfStr(const std::string& xml_string) {
 
 	for (TiXmlElement* joint_xml = robot_xml->FirstChildElement("joint"); joint_xml != nullptr; joint_xml = joint_xml->NextSiblingElement("joint")) {
 		Joint joint = Joint::fromXml(joint_xml);
-			model->m_numJoints++;
 
 		if (model->getJoint(joint.name) != nullptr) {
 			std::ostringstream error_msg;
 			error_msg << "Error! Duplicate joints '" << joint.name << "' found!";
 			throw URDFParseError(error_msg.str());
 		} else {
-			model->joints.insert(make_pair(joint.name, joint));
+			model->joints.push_back(std::move(joint));
+			model->joint_map[joint.name] = &model->joints[model->joints.size()-1];
 		}
 	}
 

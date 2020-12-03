@@ -203,9 +203,11 @@ namespace urdf{
 		}
 
 		const char *name_char = xml->Attribute("name");
-		if (name_char)
+		if (name_char != nullptr) {
 			col.name = name_char;
+		}
 
+		return col;
 	}
 
 	Link Link::fromXml(TiXmlElement* xml) {

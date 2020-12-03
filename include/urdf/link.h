@@ -100,23 +100,23 @@ namespace urdf{
 		std::vector<Collision>  collisions;
 		std::vector<Visual>  visuals;
 
-		const Joint* parent_joint;
-		const Link* parent_link;
+		Joint* parent_joint;
+		Link* parent_link;
 
 		std::vector<Joint*> child_joints;
 		std::vector<Link*> child_links;
 
 		int link_index;
 
-		const Link* getParent() const {
+		Link* getParent() const {
 			return parent_link;
 		}
 
-		void setParentLink(const Link* parent) {
+		void setParentLink(Link* parent) {
 			parent_link = parent;
 		}
 
-		void setParentJoint(const Joint* parent) {
+		void setParentJoint(Joint* parent) {
 			parent_joint = parent;
 		}
 
