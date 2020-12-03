@@ -8,14 +8,19 @@
 
 const char* urdfstr =
     "<?xml version=\"1.0\">\n"
-    "<robot>\n"
-    "\t<link name=\"base_link\">\n"
-    "\t</link>\n"
+    "<robot name=\"test\">\n"
+    "<link name=\"base_link\">\n"
+    "<visual>"
+    "<geometry>"
+    "<cylinder length=\"0.6\" radius=\"0.2\"/>"
+    "</geometry>"
+    "</visual>"
+    "</link>"
     "</robot>";
 
 TEST_CASE ( "load a urdf model and check for correct structure", "[UrdfModel]" ) {
     try {
-        urdf::UrdfModel* model = urdf::UrdfModel::fromUrdfStr(urdfstr);
+        urdf::UrdfModel* model = urdf::UrdfModel::fromUrdfStr(std::string(urdfstr));
         delete model;
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;

@@ -2,6 +2,8 @@
 #include "urdf/link.h"
 #include "urdf/joint.h"
 
+#include <tinyxml/tinyxml.h>
+
 using namespace urdf;
 
 Link* UrdfModel::getLink(const string& name) {
@@ -114,9 +116,8 @@ UrdfModel* UrdfModel::fromUrdfStr(const std::string& xml_string) {
 		xml_doc.ClearError();
 		throw URDFParseError(error_msg);
 	}
-
-	TiXmlElement *robot_xml = xml_doc.FirstChildElement("robot");
-	if (robot_xml == nullptr) {
+	TiXmlElement *robot_xml = xml_doc.RootElement();
+	if (robot_xml == nullptr || robot_xml->ValueStr() != "robot") {
 		delete model;
 		std::string error_msg = "Error! Could not find the <robot> element in the xml file";
 		throw URDFParseError(error_msg);
