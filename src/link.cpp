@@ -236,6 +236,8 @@ namespace urdf{
 			Collision col = Collision::fromXml(col_xml);
 			link.collisions.push_back(col);
 		}
+
+		return link;
 	}
 
 }

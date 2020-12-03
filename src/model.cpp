@@ -40,12 +40,14 @@ void UrdfModel::initLinkTree(map<string, string>& parent_link_tree) {
 		string child_link_name = joint->second->child_link_name;
 
 		if (parent_link_name.empty()){
+			delete this;
 			ostringstream error_msg;
 			error_msg << "Error while constructing model! Joint [" << joint->second->name
 					  << "] is missing a parent link specification.";
 			throw URDFParseError(error_msg.str());
 		}
 		if (child_link_name.empty()) {
+			delete this;
 			ostringstream error_msg;
 			error_msg << "Error while constructing model! Joint [" << joint->second->name
 					  << "] is missing a child link specification.";
@@ -54,6 +56,7 @@ void UrdfModel::initLinkTree(map<string, string>& parent_link_tree) {
 
 		Link* child_link = getLink(child_link_name);
 		if (child_link == nullptr) {
+			delete this;
 			ostringstream error_msg;
 			error_msg << "Error while constructing model! Child link [" << child_link_name
 					  << "] of joint [" <<  joint->first << "] not found";
@@ -62,6 +65,7 @@ void UrdfModel::initLinkTree(map<string, string>& parent_link_tree) {
 
 		Link* parent_link = getLink(parent_link_name);
 		if (parent_link == nullptr) {
+			delete this;
 			ostringstream error_msg;
 			error_msg << "Error while constructing model! Parent link [" << parent_link_name
 					  << "] of joint [" <<  joint->first << "] not found";
@@ -86,6 +90,7 @@ void UrdfModel::findRoot(const map<string, string> &parent_link_tree) {
 			if (root_link == nullptr) {
 				root_link = getLink(l->first);
 			} else {
+				delete this;
 				ostringstream error_msg;
 				error_msg << "Error! Multiple root links found: (" << root_link->name
 						  << ") and (" + l->first + ")!";
@@ -112,6 +117,7 @@ UrdfModel* fromUrdfStr(const std::string& xml_string) {
 
 	TiXmlElement *robot_xml = xml_doc.FirstChildElement("robot");
 	if (robot_xml == nullptr) {
+		delete model;
 		std::string error_msg = "Error! Could not find the <robot> element in the xml file";
 		throw URDFParseError(error_msg);
 	}
@@ -128,6 +134,7 @@ UrdfModel* fromUrdfStr(const std::string& xml_string) {
 	for (TiXmlElement* material_xml = robot_xml->FirstChildElement("material"); material_xml != nullptr; material_xml = material_xml->NextSiblingElement("material")) {
 		Material material = Material::fromXml(material_xml, false); // material needs to be fully defined here
 		if (model->getMaterial(material.name) != nullptr) {
+			delete model;
 			std::ostringstream error_msg;
 			error_msg << "Duplicate materials '" << material.name << "' found!";
 			throw URDFParseError(error_msg.str());
@@ -141,6 +148,7 @@ UrdfModel* fromUrdfStr(const std::string& xml_string) {
 		Link link = Link::fromXml(link_xml);
 
 		if (model->getLink(link.name) != nullptr) {
+			delete model;
 			std::ostringstream error_msg;
 			error_msg << "Error! Duplicate links '" << link.name << "' found!";
 			throw URDFParseError(error_msg.str());
@@ -157,6 +165,7 @@ UrdfModel* fromUrdfStr(const std::string& xml_string) {
 								model->materials.push_back(visual.material.value());
 							} else {
 								// no matrial information available for this visual -> error
+								delete model;
 								std::ostringstream error_msg;
 								error_msg << "Error! Link '" << link.name
 										  << "' material '" << visual.material_name
@@ -173,6 +182,7 @@ UrdfModel* fromUrdfStr(const std::string& xml_string) {
 	}
 
 	if (model->links.empty()){
+		delete model;
 		std::string error_msg = "Error! No link elements found in the urdf file.";
 		throw URDFParseError(error_msg);
 	}
@@ -181,6 +191,7 @@ UrdfModel* fromUrdfStr(const std::string& xml_string) {
 		Joint joint = Joint::fromXml(joint_xml);
 
 		if (model->getJoint(joint.name) != nullptr) {
+			delete model;
 			std::ostringstream error_msg;
 			error_msg << "Error! Duplicate joints '" << joint.name << "' found!";
 			throw URDFParseError(error_msg.str());
