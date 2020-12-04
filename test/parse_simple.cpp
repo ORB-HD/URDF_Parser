@@ -20,8 +20,7 @@ const char* urdfstr =
 
 TEST_CASE ( "load a urdf model and check for correct structure", "[UrdfModel]" ) {
     try {
-        urdf::UrdfModel* model = urdf::UrdfModel::fromUrdfStr(std::string(urdfstr));
-        delete model;
+        auto model = urdf::UrdfModel::fromUrdfStr(std::string(urdfstr));
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
     }

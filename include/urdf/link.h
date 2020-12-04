@@ -54,7 +54,7 @@ namespace urdf{
 		std::string material_name;
 		Transform origin;
 
-		std::optional<Geometry*> geometry;
+		std::optional<std::shared_ptr<Geometry>> geometry;
 		std::optional<Material> material;
 
 		void clear() {
@@ -67,7 +67,6 @@ namespace urdf{
 		}
 
 		Visual() { this->clear(); }
-		~Visual() { if (geometry.has_value()) { delete geometry.value(); } }
 
 		static Visual fromXml(TiXmlElement* xml);
 	};
@@ -75,7 +74,7 @@ namespace urdf{
 	struct Collision {
 		std::string name;
 		Transform origin;
-		std::optional<Geometry*> geometry;
+		std::optional<std::shared_ptr<Geometry>> geometry;
 
 		void clear() {
 			name.clear();
@@ -85,7 +84,6 @@ namespace urdf{
 		}
 
 		Collision() { this->clear(); }
-		~Collision() { if (geometry.has_value()) { delete geometry.value(); } }
 
 		static Collision fromXml(TiXmlElement* xml);
 	};

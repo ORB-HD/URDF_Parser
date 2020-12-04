@@ -22,7 +22,7 @@ namespace urdf {
 
 			Geometry(GeometryType type): type(type) {}
 
-			static Geometry* fromXml(TiXmlElement* xml);
+			static std::shared_ptr<Geometry> fromXml(TiXmlElement* xml);
 	};
 
 	class Sphere : public Geometry {
@@ -35,7 +35,7 @@ namespace urdf {
 
 			Sphere() : radius(0.), Geometry(GeometryType::SPHERE) {}
 
-			static Sphere* fromXml(TiXmlElement* xml);
+			static std::shared_ptr<Sphere> fromXml(TiXmlElement* xml);
 	};
 
 	class Box : public Geometry {
@@ -48,7 +48,7 @@ namespace urdf {
 
 			Box() : Geometry(GeometryType::BOX) {}
 
-			static Box* fromXml(TiXmlElement* xml);
+			static std::shared_ptr<Box> fromXml(TiXmlElement* xml);
 	};
 
 	class Cylinder : public Geometry {
@@ -63,7 +63,7 @@ namespace urdf {
 
 			Cylinder() : length(0.), radius(0.), Geometry(GeometryType::CYLINDER) {}
 
-			static Cylinder* fromXml(TiXmlElement* xml);
+			static std::shared_ptr<Cylinder> fromXml(TiXmlElement* xml);
 	};
 
 	class Mesh : public Geometry {
@@ -81,7 +81,7 @@ namespace urdf {
 
 			Mesh() : scale(Vector3(1., 1., 1.)), Geometry(GeometryType::MESH) {}
 
-			static Mesh* fromXml(TiXmlElement* xml);
+			static std::shared_ptr<Mesh> fromXml(TiXmlElement* xml);
 	};
 }
 

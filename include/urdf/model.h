@@ -57,7 +57,7 @@ namespace urdf {
 
 		UrdfModel() { clear(); }
 
-		static UrdfModel* fromUrdfStr(const std::string& xml_string);
+		static std::shared_ptr<UrdfModel> fromUrdfStr(const std::string& xml_string);
 	};
 
 }
