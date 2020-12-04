@@ -2,7 +2,7 @@
 #include "urdf/link.h"
 #include "urdf/joint.h"
 
-#include <tinyxml/tinyxml.h>
+#include "tinyxml/txml.h"
 
 using namespace urdf;
 

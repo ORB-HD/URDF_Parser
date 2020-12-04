@@ -1,7 +1,7 @@
 #ifndef URDF_GEOMETRY_H
 #define URDF_GEOMETRY_H
 
-#include <tinyxml/tinyxml.h>
+#include "tinyxml/txml.h"
 
 #include "urdf/common.h"
 #include "urdf/exception.h"

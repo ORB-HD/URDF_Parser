@@ -7,15 +7,10 @@ SET(CMAKE_CXX_STANDARD 17)
 
 INCLUDE_DIRECTORIES(
   ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_SOURCE_DIR}/tinyxml/include
   ${BOOST_INCLUDE_DIR}
 )
 
 OPTION(RUN_TEST "enable testing of library" OFF)
-
-ADD_SUBDIRECTORY(
-  tinyxml
-)
 
 SET( URDF_SRCS
   src/common.cpp
@@ -23,6 +18,9 @@ SET( URDF_SRCS
   src/geometry.cpp
   src/link.cpp
   src/model.cpp
+  src/tinyxml.cpp
+  src/tinyxmlerror.cpp
+  src/tinyxmlparser.cpp
 )
 
 ADD_LIBRARY( urdfparser STATIC
@@ -30,10 +28,6 @@ ADD_LIBRARY( urdfparser STATIC
 )
 
 SET_PROPERTY(TARGET urdfparser PROPERTY POSITION_INDEPENDENT_CODE ON)
-
-TARGET_LINK_LIBRARIES( urdfparser
-  mytinyxml
- )
 
 IF(RUN_TEST)
   FIND_PACKAGE(Catch2 REQUIRED)

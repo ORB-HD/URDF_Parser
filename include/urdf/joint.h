@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <optional>
-#include <tinyxml/tinyxml.h>
+#include "tinyxml/txml.h"
 
 #include "urdf/common.h"
 

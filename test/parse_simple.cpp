@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <exception>
-#include <tinyxml/tinyxml.h>
+#include "tinyxml/txml.h"
 
 const char* urdfstr =
     "<?xml version=\"1.0\">\n"
