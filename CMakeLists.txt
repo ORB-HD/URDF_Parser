@@ -10,7 +10,7 @@ INCLUDE_DIRECTORIES(
   ${BOOST_INCLUDE_DIR}
 )
 
-OPTION(RUN_TEST "enable testing of library" OFF)
+OPTION(URDF_BUILD_TEST "enable testing of library" OFF)
 
 SET( URDF_SRCS
   src/common.cpp
@@ -27,13 +27,15 @@ ADD_LIBRARY( urdfparser STATIC
   ${URDF_SRCS}
 )
 
+SET(URDFPARSER_LIB urdfparser)
+
 SET_PROPERTY(TARGET urdfparser PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-IF(RUN_TEST)
+IF(URDF_BUILD_TEST)
   FIND_PACKAGE(Catch2 REQUIRED)
   ADD_EXECUTABLE(test test/parse_simple.cpp)
   TARGET_LINK_LIBRARIES(test
     Catch2::Catch2
     urdfparser
   )
-ENDIF(RUN_TEST)
+ENDIF(URDF_BUILD_TEST)
