@@ -43,13 +43,13 @@ void UrdfModel::initLinkTree(map<string, string>& parent_link_tree) {
 
 		if (parent_link_name.empty()){
 			ostringstream error_msg;
-			error_msg << "Error while constructing model! Joint [" << joint->second->name
+			error_msg << "Error while constructing model! Joint [" << joint->first
 					  << "] is missing a parent link specification.";
 			throw URDFParseError(error_msg.str());
 		}
 		if (child_link_name.empty()) {
 			ostringstream error_msg;
-			error_msg << "Error while constructing model! Joint [" << joint->second->name
+			error_msg << "Error while constructing model! Joint [" << joint->first
 					  << "] is missing a child link specification.";
 			throw URDFParseError(error_msg.str());
 		}
@@ -110,6 +110,8 @@ std::shared_ptr<UrdfModel> UrdfModel::fromUrdfStr(const std::string& xml_string)
 		xml_doc.ClearError();
 		throw URDFParseError(error_msg);
 	}
+
+	xml_doc.Print();
 	TiXmlElement *robot_xml = xml_doc.RootElement();
 	if (robot_xml == nullptr || robot_xml->ValueStr() != "robot") {
 		std::string error_msg = "Error! Could not find the <robot> element in the xml file";
