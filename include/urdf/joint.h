@@ -21,7 +21,7 @@ namespace urdf{
 		JointDynamics() : damping(0.), friction(0.) {}
     JointDynamics(const JointDynamics& jd) : damping(jd.damping), friction(jd.friction) {}
 
-		static JointDynamics fromXml(TiXmlElement* xml);
+		static std::shared_ptr<JointDynamics> fromXml(TiXmlElement* xml);
 	};
 
 	struct JointLimits {
@@ -41,7 +41,7 @@ namespace urdf{
     JointLimits(const JointLimits& jl) : lower(jl.lower), upper(jl.upper),
                                          effort(jl.effort), velocity(jl.velocity) {}
 
-		static JointLimits fromXml(TiXmlElement* xml);
+		static std::shared_ptr<JointLimits> fromXml(TiXmlElement* xml);
 	};
 
 	struct JointSafety {
@@ -61,7 +61,7 @@ namespace urdf{
     JointSafety(const JointSafety& js) : upper_limit(js.upper_limit), lower_limit(js.lower_limit),
                                          k_position(js.k_position), k_velocity(js.k_velocity) {}
 
-		static JointSafety fromXml(TiXmlElement* xml);
+		static std::shared_ptr<JointSafety> fromXml(TiXmlElement* xml);
 	};
 
 	struct JointCalibration {
@@ -75,7 +75,7 @@ namespace urdf{
 
 		JointCalibration() { clear(); }
     JointCalibration(const JointCalibration& jc): rising(jc.rising), falling(jc.falling) {}
-		static JointCalibration fromXml(TiXmlElement* xml);
+		static std::shared_ptr<JointCalibration> fromXml(TiXmlElement* xml);
 	};
 
 	struct JointMimic {
@@ -92,7 +92,7 @@ namespace urdf{
 		JointMimic() : joint_name(""), offset(0.), multiplier(0.) {}
     JointMimic(const JointMimic& mimic): joint_name(mimic.joint_name), offset(mimic.offset),
                                          multiplier(mimic.multiplier) {}
-		static JointMimic fromXml(TiXmlElement* xml);
+		static std::shared_ptr<JointMimic> fromXml(TiXmlElement* xml);
 	};
 
 	enum JointType {
@@ -113,11 +113,11 @@ namespace urdf{
 		std::string parent_link_name;
 		Transform parent_to_joint_transform;
 
-		std::optional<JointDynamics> dynamics;
-		std::optional<JointLimits> limits;
-		std::optional<JointSafety> safety;
-		std::optional<JointCalibration> calibration;
-		std::optional<JointMimic> mimic;
+		std::optional<std::shared_ptr<JointDynamics>> dynamics;
+		std::optional<std::shared_ptr<JointLimits>> limits;
+		std::optional<std::shared_ptr<JointSafety>> safety;
+		std::optional<std::shared_ptr<JointCalibration>> calibration;
+		std::optional<std::shared_ptr<JointMimic>> mimic;
 
 		void clear() {
 			this->axis.clear();
@@ -140,7 +140,7 @@ namespace urdf{
                                dynamics(joint.dynamics), limits(joint.limits), safety(joint.safety),
                                calibration(joint.calibration), mimic(joint.mimic) {}
 
-		static Joint fromXml(TiXmlElement* xml);
+		static std::shared_ptr<Joint> fromXml(TiXmlElement* xml);
   };
 }
 

@@ -16,36 +16,28 @@ namespace urdf {
 
 	struct UrdfModel {
 		string name;
-		Link* root_link;
+		std::shared_ptr<Link> root_link;
 
-		map<string, Link*> link_map;
-		map<string, Joint*> joint_map;
+		map<string, std::shared_ptr<Link>> link_map;
+		map<string, std::shared_ptr<Joint>> joint_map;
 		map<string, std::shared_ptr<Material>> material_map;
 
-		vector<Link> links;
-		vector<Joint> joints;
-		vector<std::shared_ptr<Material>> materials;
-
-
 		const string& getName() const { return name; }
-		Link* getRoot() const { return root_link; }
+		std::shared_ptr<Link> getRoot() const { return root_link; }
 
-		Link* getLink(const string& name);
-		Joint* getJoint(const string& name);
+		std::shared_ptr<Link> getLink(const string& name);
+		std::shared_ptr<Joint> getJoint(const string& name);
 		std::shared_ptr<Material> getMaterial(const string& name);
 
-		void getLinks(vector<Link*>& linklist) const;
+		void getLinks(vector<std::shared_ptr<Link>>& linklist) const;
 
 		void clear() {
 			name.clear();
 
 			link_map.clear();
-			links.clear();
 
-			joints.clear();
 			joint_map.clear();
 
-			materials.clear();
 			material_map.clear();
 
 			root_link = nullptr;

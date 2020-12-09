@@ -65,19 +65,19 @@ namespace urdf{
 	}
 
 
-	Inertial Inertial::fromXml(TiXmlElement *xml) {
-		Inertial i;
+	std::shared_ptr<Inertial> Inertial::fromXml(TiXmlElement *xml) {
+		std::shared_ptr<Inertial> i = std::make_shared<Inertial>();
 
 		TiXmlElement *o = xml->FirstChildElement("origin");
 		if (o != nullptr) {
-			i.origin = Transform::fromXml(o);
+			i->origin = Transform::fromXml(o);
 		}
 
 		TiXmlElement *mass_xml = xml->FirstChildElement("mass");
 		if (mass_xml != nullptr) {
 			if (mass_xml->Attribute("value") != nullptr) {
 				try {
-					i.mass = boost::lexical_cast<double>(mass_xml->Attribute("value"));
+					i->mass = boost::lexical_cast<double>(mass_xml->Attribute("value"));
 				} catch (boost::bad_lexical_cast &e) {
 					std::ostringstream error_msg;
 					error_msg << "Error while parsing link '" << getParentLinkName(xml)
@@ -105,12 +105,12 @@ namespace urdf{
 				inertia_xml->Attribute("iyy") && inertia_xml->Attribute("iyz") &&
 				inertia_xml->Attribute("izz")) {
 				try {
-					i.ixx	= boost::lexical_cast<double>(inertia_xml->Attribute("ixx"));
-					i.ixy	= boost::lexical_cast<double>(inertia_xml->Attribute("ixy"));
-					i.ixz	= boost::lexical_cast<double>(inertia_xml->Attribute("ixz"));
-					i.iyy	= boost::lexical_cast<double>(inertia_xml->Attribute("iyy"));
-					i.iyz	= boost::lexical_cast<double>(inertia_xml->Attribute("iyz"));
-					i.izz	= boost::lexical_cast<double>(inertia_xml->Attribute("izz"));
+					i->ixx	= boost::lexical_cast<double>(inertia_xml->Attribute("ixx"));
+					i->ixy	= boost::lexical_cast<double>(inertia_xml->Attribute("ixy"));
+					i->ixz	= boost::lexical_cast<double>(inertia_xml->Attribute("ixz"));
+					i->iyy	= boost::lexical_cast<double>(inertia_xml->Attribute("iyy"));
+					i->iyz	= boost::lexical_cast<double>(inertia_xml->Attribute("iyz"));
+					i->izz	= boost::lexical_cast<double>(inertia_xml->Attribute("izz"));
 				} catch (boost::bad_lexical_cast &e) {
 					std::ostringstream error_msg;
 					error_msg << "Error while parsing link '" << getParentLinkName(xml)
@@ -210,12 +210,12 @@ namespace urdf{
 		return col;
 	}
 
-	Link Link::fromXml(TiXmlElement* xml) {
-		Link link;
+	std::shared_ptr<Link> Link::fromXml(TiXmlElement* xml) {
+		std::shared_ptr<Link> link = std::make_shared<Link>();
 
 		const char *name_char = xml->Attribute("name");
 		if (name_char != nullptr) {
-			link.name = std::string(name_char);
+			link->name = std::string(name_char);
 		} else {
 			std::ostringstream error_msg;
 			error_msg << "Error! Link without a name attribute detected!";
@@ -224,17 +224,17 @@ namespace urdf{
 
 		TiXmlElement *i = xml->FirstChildElement("inertial");
 		if (i != nullptr) {
-			link.inertial = Inertial::fromXml(i);
+			link->inertial = Inertial::fromXml(i);
 		}
 
 		for (TiXmlElement* vis_xml = xml->FirstChildElement("visual"); vis_xml != nullptr; vis_xml = vis_xml->NextSiblingElement("visual")) {
 			auto vis = Visual::fromXml(vis_xml);
-			link.visuals.push_back(vis);
+			link->visuals.push_back(vis);
 		}
 
 		for (TiXmlElement* col_xml = xml->FirstChildElement("collision"); col_xml != nullptr; col_xml = col_xml->NextSiblingElement("collision")) {
 			auto col = Collision::fromXml(col_xml);
-			link.collisions.push_back(col);
+			link->collisions.push_back(col);
 		}
 
 		return link;

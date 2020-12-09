@@ -50,7 +50,7 @@ namespace urdf{
     Inertial(const Inertial& i) : origin(i.origin), ixx(i.ixx), ixy(i.ixy), ixz(i.ixz),
                                   iyy(i.iyy), iyz(i.iyz), izz(i.izz) {}
 
-		static Inertial fromXml(TiXmlElement* xml);
+		static std::shared_ptr<Inertial> fromXml(TiXmlElement* xml);
 	};
 
 	struct Visual {
@@ -100,28 +100,28 @@ namespace urdf{
 	struct Link {
 		std::string name;
 
-		std::optional<Inertial> inertial;
+		std::optional<std::shared_ptr<Inertial>> inertial;
 
 		std::vector<std::shared_ptr<Collision>>  collisions;
 		std::vector<std::shared_ptr<Visual>>  visuals;
 
-		Joint* parent_joint;
-		Link* parent_link;
+		std::shared_ptr<Joint> parent_joint;
+		std::shared_ptr<Link> parent_link;
 
-		std::vector<Joint*> child_joints;
-		std::vector<Link*> child_links;
+		std::vector<std::shared_ptr<Joint>> child_joints;
+		std::vector<std::shared_ptr<Link>> child_links;
 
 		int link_index;
 
-		Link* getParent() const {
+		std::shared_ptr<Link> getParent() const {
 			return parent_link;
 		}
 
-		void setParentLink(Link* parent) {
+		void setParentLink(std::shared_ptr<Link> parent) {
 			parent_link = parent;
 		}
 
-		void setParentJoint(Joint* parent) {
+		void setParentJoint(std::shared_ptr<Joint> parent) {
 			parent_joint = parent;
 		}
 
@@ -146,7 +146,7 @@ namespace urdf{
                           parent_link(l.parent_link), child_joints(l.child_joints),
                           child_links(l.child_links), link_index(l.link_index) {}
 
-		static Link fromXml(TiXmlElement *xml);
+		static std::shared_ptr<Link> fromXml(TiXmlElement *xml);
 	};
 
 }
