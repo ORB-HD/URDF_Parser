@@ -3,15 +3,15 @@
 
 namespace urdf{
 
-	Material Material::fromXml(TiXmlElement *xml, bool only_name_is_ok) {
+	std::shared_ptr<Material> Material::fromXml(TiXmlElement *xml, bool only_name_is_ok) {
 		bool has_rgb = false;
 		bool has_filename = false;
 
-		Material m;
+		std::shared_ptr<Material> m = std::make_shared<Material>();
 
 		auto name_str = xml->Attribute("name");
 		if (name_str != NULL) {
-			m.name = name_str;
+			m->name = name_str;
 		} else {
 			std::ostringstream error_msg;
 			error_msg << "Error! Material without a name attribute detected!";
@@ -22,7 +22,7 @@ namespace urdf{
 		auto t = xml->FirstChildElement("texture");
 		if (t != NULL) {
 			if (t->Attribute("filename") != NULL) {
-				m.texture_filename = t->Attribute("filename");
+				m->texture_filename = t->Attribute("filename");
 				has_filename = true;
 			}
 		}
@@ -31,11 +31,11 @@ namespace urdf{
 		if (c != NULL) {
 			if (c->Attribute("rgba") != nullptr) {
 				try {
-					m.color = Color::fromColorStr(c->Attribute("rgba"));
+					m->color = Color::fromColorStr(c->Attribute("rgba"));
 					has_rgb = true;
 				} catch (URDFParseError &e) {
 					std::ostringstream error_msg;
-					error_msg << "Material [" << m.name
+					error_msg << "Material [" << m->name
 							  << "] has malformed color rgba values: "
 							  << e.what() << "!";
 					throw URDFParseError(error_msg.str());
@@ -47,7 +47,7 @@ namespace urdf{
 			if (!only_name_is_ok) // no need for an error if only name is ok
 			{
 				std::ostringstream error_msg;
-				error_msg << "Material [" << m.name
+				error_msg << "Material [" << m->name
 						  << "] has neither a texture nor a color defined!";
 				throw URDFParseError(error_msg.str());
 			}
@@ -140,13 +140,13 @@ namespace urdf{
 		return i;
 	}
 
-	Visual Visual::fromXml(TiXmlElement *xml) {
-		Visual vis;
+	std::shared_ptr<Visual> Visual::fromXml(TiXmlElement *xml) {
+		std::shared_ptr<Visual> vis = std::make_shared<Visual>();
 
 		TiXmlElement *o = xml->FirstChildElement("origin");
 		if (o != nullptr) {
 			try {
-				vis.origin = Transform::fromXml(o);
+				vis->origin = Transform::fromXml(o);
 			} catch (URDFParseError& e) {
 				std::ostringstream error_msg;
 				error_msg << "Error while parsing link '" << getParentLinkName(xml)
@@ -157,18 +157,18 @@ namespace urdf{
 
 		TiXmlElement *geom = xml->FirstChildElement("geometry");
 		if (geom != nullptr) {
-			vis.geometry = Geometry::fromXml(geom);
+			vis->geometry = Geometry::fromXml(geom);
 		}
 
 		const char *name_char = xml->Attribute("name");
 		if (name_char != nullptr) {
-			vis.name = name_char;
+			vis->name = name_char;
 		}
 
 		TiXmlElement *mat = xml->FirstChildElement("material");
 		if (mat != nullptr) {
 			if (mat->Attribute("name") != nullptr) {
-				vis.material_name = mat->Attribute("name");
+				vis->material_name = mat->Attribute("name");
 			} else {
 				std::ostringstream error_msg;
 				error_msg << "Error while parsing link '" << getParentLinkName(xml)
@@ -176,19 +176,19 @@ namespace urdf{
 				throw URDFParseError(error_msg.str());
 			}
 
-			vis.material = Material::fromXml(mat, true);
+			vis->material = Material::fromXml(mat, true);
 		}
 
 		return vis;
 	}
 
-	Collision Collision::fromXml(TiXmlElement* xml) {
-		Collision col;
+	std::shared_ptr<Collision> Collision::fromXml(TiXmlElement* xml) {
+		std::shared_ptr<Collision> col = std::make_shared<Collision>();
 
 		TiXmlElement *o = xml->FirstChildElement("origin");
 		if (o != nullptr) {
 			try {
-				col.origin = Transform::fromXml(o);
+				col->origin = Transform::fromXml(o);
 			} catch (URDFParseError& e) {
 				std::ostringstream error_msg;
 				error_msg << "Error while parsing link '" << getParentLinkName(xml)
@@ -199,12 +199,12 @@ namespace urdf{
 
 		TiXmlElement *geom = xml->FirstChildElement("geometry");
 		if (geom != nullptr){
-			col.geometry = Geometry::fromXml(geom);
+			col->geometry = Geometry::fromXml(geom);
 		}
 
 		const char *name_char = xml->Attribute("name");
 		if (name_char != nullptr) {
-			col.name = name_char;
+			col->name = name_char;
 		}
 
 		return col;
@@ -228,12 +228,12 @@ namespace urdf{
 		}
 
 		for (TiXmlElement* vis_xml = xml->FirstChildElement("visual"); vis_xml != nullptr; vis_xml = vis_xml->NextSiblingElement("visual")) {
-			Visual vis = Visual::fromXml(vis_xml);
+			auto vis = Visual::fromXml(vis_xml);
 			link.visuals.push_back(vis);
 		}
 
 		for (TiXmlElement* col_xml = xml->FirstChildElement("collision"); col_xml != nullptr; col_xml = col_xml->NextSiblingElement("collision")) {
-			Collision col = Collision::fromXml(col_xml);
+			auto col = Collision::fromXml(col_xml);
 			link.collisions.push_back(col);
 		}
 

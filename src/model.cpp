@@ -22,7 +22,7 @@ Joint* UrdfModel::getJoint(const string& name) {
 	}
 }
 
-Material* UrdfModel::getMaterial(const string& name) {
+std::shared_ptr<Material> UrdfModel::getMaterial(const string& name) {
 	if (material_map.find(name) == material_map.end()) {
 		return nullptr;
 	} else {
@@ -127,14 +127,14 @@ std::shared_ptr<UrdfModel> UrdfModel::fromUrdfStr(const std::string& xml_string)
 	}
 
 	for (TiXmlElement* material_xml = robot_xml->FirstChildElement("material"); material_xml != nullptr; material_xml = material_xml->NextSiblingElement("material")) {
-		Material material = Material::fromXml(material_xml, false); // material needs to be fully defined here
-		if (model->getMaterial(material.name) != nullptr) {
+		auto material = Material::fromXml(material_xml, false); // material needs to be fully defined here
+		if (model->getMaterial(material->name) != nullptr) {
 			std::ostringstream error_msg;
-			error_msg << "Duplicate materials '" << material.name << "' found!";
+			error_msg << "Duplicate materials '" << material->name << "' found!";
 			throw URDFParseError(error_msg.str());
 		} else {
-			model->materials.push_back(std::move(material));
-			model->material_map[material.name] = &model->materials[model->materials.size()-1];
+			model->materials.push_back(material);
+			model->material_map[material->name] = model->materials[model->materials.size()-1];
 		}
 	}
 
@@ -149,18 +149,18 @@ std::shared_ptr<UrdfModel> UrdfModel::fromUrdfStr(const std::string& xml_string)
 			// loop over link visual to find the materials
 			if (!link.visuals.empty()) {
 				for ( auto visual : link.visuals ) {
-					if (!visual.material_name.empty()) {
-						if (model->getMaterial(visual.material_name) != nullptr) {
-							visual.material = *model->getMaterial( visual.material_name.c_str() );
+					if (!visual->material_name.empty()) {
+						if (model->getMaterial(visual->material_name) != nullptr) {
+							visual->material.emplace(model->getMaterial( visual->material_name.c_str() ));
 						} else {
 							// if no model matrial found use the one defined in the visual
-							if (visual.material.has_value()) {
-								model->materials.push_back(visual.material.value());
+							if (visual->material.has_value()) {
+								model->materials.push_back(visual->material.value());
 							} else {
 								// no matrial information available for this visual -> error
 								std::ostringstream error_msg;
 								error_msg << "Error! Link '" << link.name
-										  << "' material '" << visual.material_name
+										  << "' material '" << visual->material_name
 										  <<" ' undefined!";
 								throw URDFParseError(error_msg.str());
 							}

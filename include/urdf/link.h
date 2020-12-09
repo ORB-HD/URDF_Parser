@@ -26,7 +26,7 @@ namespace urdf{
     Material(const Material& m): name(m.name), texture_filename(m.texture_filename),
                                  color(m.color) {}
 
-		static Material fromXml(TiXmlElement* xml, bool);
+		static std::shared_ptr<Material> fromXml(TiXmlElement* xml, bool);
 	};
 
 
@@ -59,7 +59,7 @@ namespace urdf{
 		Transform origin;
 
 		std::optional<std::shared_ptr<Geometry>> geometry;
-		std::optional<Material> material;
+		std::optional<std::shared_ptr<Material>> material;
 
 		void clear() {
 			origin.clear();
@@ -74,7 +74,7 @@ namespace urdf{
     Visual(const Visual& v) : name(v.name), material_name(v.material_name),
                               origin(v.origin), geometry(v.geometry), material(v.material) {}
 
-		static Visual fromXml(TiXmlElement* xml);
+		static std::shared_ptr<Visual> fromXml(TiXmlElement* xml);
 	};
 
 	struct Collision {
@@ -92,7 +92,7 @@ namespace urdf{
 		Collision() { this->clear(); }
     Collision(const Collision& c) : name(c.name), origin(c.origin), geometry(c.geometry) {}
 
-		static Collision fromXml(TiXmlElement* xml);
+		static std::shared_ptr<Collision> fromXml(TiXmlElement* xml);
 	};
 
 	const char* getParentLinkName(TiXmlElement* xml);
@@ -102,8 +102,8 @@ namespace urdf{
 
 		std::optional<Inertial> inertial;
 
-		std::vector<Collision>  collisions;
-		std::vector<Visual>  visuals;
+		std::vector<std::shared_ptr<Collision>>  collisions;
+		std::vector<std::shared_ptr<Visual>>  visuals;
 
 		Joint* parent_joint;
 		Link* parent_link;

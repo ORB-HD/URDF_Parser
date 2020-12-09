@@ -20,11 +20,11 @@ namespace urdf {
 
 		map<string, Link*> link_map;
 		map<string, Joint*> joint_map;
-		map<string, Material*> material_map;
+		map<string, std::shared_ptr<Material>> material_map;
 
 		vector<Link> links;
 		vector<Joint> joints;
-		vector<Material> materials;
+		vector<std::shared_ptr<Material>> materials;
 
 
 		const string& getName() const { return name; }
@@ -32,7 +32,7 @@ namespace urdf {
 
 		Link* getLink(const string& name);
 		Joint* getJoint(const string& name);
-		Material* getMaterial(const string& name);
+		std::shared_ptr<Material> getMaterial(const string& name);
 
 		void getLinks(vector<Link*>& linklist) const;
 
