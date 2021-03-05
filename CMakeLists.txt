@@ -33,8 +33,8 @@ SET_PROPERTY(TARGET urdfparser PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 IF(URDF_BUILD_TEST)
   FIND_PACKAGE(Catch2 REQUIRED)
-  ADD_EXECUTABLE(test test/parse_simple.cpp)
-  TARGET_LINK_LIBRARIES(test
+  ADD_EXECUTABLE(test_library test/parse_simple.cpp)
+  TARGET_LINK_LIBRARIES(test_library
     Catch2::Catch2
     urdfparser
   )

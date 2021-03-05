@@ -14,7 +14,7 @@ pipeline {
     stage('Test Library') {
       steps {
         dir(path: 'build') {
-          sh './test'
+          sh './test_library'
         }
 
       }
