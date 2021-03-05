@@ -14,11 +14,16 @@ pipeline {
     stage('Test Library') {
       steps {
         dir(path: 'build') {
-          sh './test_library'
+          sh './test_library -r junit > testresults.xml'
         }
 
       }
     }
-
+  }
+  
+  post {
+    always {
+      junit 'build/testresults.xml'
+    }
   }
 }
