@@ -58,7 +58,10 @@ namespace urdf{
 
 	const char* getParentLinkName(TiXmlElement *c) {
 		TiXmlElement* e = c->Parent()->ToElement();
-		while(e->Value() != "link" && e->Parent()!=NULL) {
+		while(e->Parent() != nullptr) {
+			if (e->ValueStr() == "link") {
+				break;
+			}
 			e = e->Parent()->ToElement();
 		}
 		return e->Attribute("name");
