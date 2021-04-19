@@ -9,8 +9,7 @@
 #endif //M_PI
 
 #include "tinyxml/txml.h"
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
+#include <memory>
 
 #include "urdf/exception.h"
 

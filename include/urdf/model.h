@@ -10,7 +10,6 @@
 #include "urdf/joint.h"
 
 using namespace std;
-using namespace boost;
 
 namespace urdf {
 

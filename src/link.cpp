@@ -1,6 +1,9 @@
 #include "tinyxml/txml.h"
 #include "urdf/link.h"
 
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+
 namespace urdf{
 
 	std::shared_ptr<Material> Material::fromXml(TiXmlElement *xml, bool only_name_is_ok) {
