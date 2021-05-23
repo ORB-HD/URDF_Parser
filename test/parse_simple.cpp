@@ -151,7 +151,7 @@ TEST_CASE ( "load a two segment model with inertial information", "[UrdfModel]" 
     CHECK(link1 != nullptr);
     //check inertial info of link
     CHECK(link1->inertial != nullopt);
-    auto inertial = link1->inertial->get();
+    auto inertial = &link1->inertial.value();
     CHECK(inertial != nullptr);
     CHECK(inertial->mass == 4.);
     CHECK(inertial->ixx == 0.1);

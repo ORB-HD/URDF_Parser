@@ -71,19 +71,19 @@ namespace urdf{
 	}
 
 
-	std::shared_ptr<Inertial> Inertial::fromXml(TiXmlElement *xml) {
-		std::shared_ptr<Inertial> i = std::make_shared<Inertial>();
+  Inertial Inertial::fromXml(TiXmlElement *xml) {
+		Inertial i;
 
 		TiXmlElement *o = xml->FirstChildElement("origin");
 		if (o != nullptr) {
-			i->origin = Transform::fromXml(o);
+			i.origin = Transform::fromXml(o);
 		}
 
 		TiXmlElement *mass_xml = xml->FirstChildElement("mass");
 		if (mass_xml != nullptr) {
 			if (mass_xml->Attribute("value") != nullptr) {
 				try {
-					i->mass = boost::lexical_cast<double>(mass_xml->Attribute("value"));
+					i.mass = boost::lexical_cast<double>(mass_xml->Attribute("value"));
 				} catch (boost::bad_lexical_cast &e) {
 					std::ostringstream error_msg;
 					error_msg << "Error while parsing link '" << getParentLinkName(xml)
@@ -111,12 +111,12 @@ namespace urdf{
 				inertia_xml->Attribute("iyy") && inertia_xml->Attribute("iyz") &&
 				inertia_xml->Attribute("izz")) {
 				try {
-					i->ixx	= boost::lexical_cast<double>(inertia_xml->Attribute("ixx"));
-					i->ixy	= boost::lexical_cast<double>(inertia_xml->Attribute("ixy"));
-					i->ixz	= boost::lexical_cast<double>(inertia_xml->Attribute("ixz"));
-					i->iyy	= boost::lexical_cast<double>(inertia_xml->Attribute("iyy"));
-					i->iyz	= boost::lexical_cast<double>(inertia_xml->Attribute("iyz"));
-					i->izz	= boost::lexical_cast<double>(inertia_xml->Attribute("izz"));
+					i.ixx	= boost::lexical_cast<double>(inertia_xml->Attribute("ixx"));
+					i.ixy	= boost::lexical_cast<double>(inertia_xml->Attribute("ixy"));
+					i.ixz	= boost::lexical_cast<double>(inertia_xml->Attribute("ixz"));
+					i.iyy	= boost::lexical_cast<double>(inertia_xml->Attribute("iyy"));
+					i.iyz	= boost::lexical_cast<double>(inertia_xml->Attribute("iyz"));
+					i.izz	= boost::lexical_cast<double>(inertia_xml->Attribute("izz"));
 				} catch (boost::bad_lexical_cast &e) {
 					std::ostringstream error_msg;
 					error_msg << "Error while parsing link '" << getParentLinkName(xml)

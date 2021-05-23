@@ -48,9 +48,9 @@ namespace urdf{
 
 		Inertial() : mass(0.), ixx(0.), ixy(0.), ixz(0.), iyy(0.), iyz(0.), izz(0.) {}
 		Inertial(const Inertial& i) : origin(i.origin), ixx(i.ixx), ixy(i.ixy), ixz(i.ixz),
-                                  iyy(i.iyy), iyz(i.iyz), izz(i.izz) {}
+                                  iyy(i.iyy), iyz(i.iyz), izz(i.izz), mass(i.mass) {}
 
-		static std::shared_ptr<Inertial> fromXml(TiXmlElement* xml);
+		static Inertial fromXml(TiXmlElement* xml);
 	};
 
 	struct Visual {
@@ -100,7 +100,7 @@ namespace urdf{
 	struct Link {
 		std::string name;
 
-		std::optional<std::shared_ptr<Inertial>> inertial;
+		std::optional<Inertial> inertial;
 
 		std::vector<std::shared_ptr<Collision>>  collisions;
 		std::vector<std::shared_ptr<Visual>>  visuals;
