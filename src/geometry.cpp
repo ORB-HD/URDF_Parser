@@ -166,6 +166,8 @@ std::shared_ptr<Geometry> Geometry::fromXml(TiXmlElement *xml) {
 		return Box::fromXml(shape);
 	} else if (type_name == "cylinder") {
 		return Cylinder::fromXml(shape);
+    } else if (type_name == "capsule") {
+		return Capsule::fromXml(shape);
 	} else if (type_name == "mesh") {
 		return Mesh::fromXml(shape);
 	} else {
