@@ -84,6 +84,38 @@ std::shared_ptr<Cylinder> Cylinder::fromXml(TiXmlElement *xml) {
 	return y;
 }
 
+std::shared_ptr<Capsule> Capsule::fromXml(TiXmlElement *xml) {
+	std::shared_ptr<Capsule> y = std::make_shared<Capsule>();
+
+	if (xml->Attribute("length") != nullptr && xml->Attribute("radius") != nullptr) {
+		try {
+			y->length = boost::lexical_cast<double>(xml->Attribute("length"));
+		} catch (boost::bad_lexical_cast &e) {
+			std::ostringstream error_msg;
+			error_msg << "Error while parsing link '" << getParentLinkName(xml)
+					  << "': capsule length [" << xml->Attribute("length")
+					  << "] is not a valid float: " << e.what() << "!";
+			throw URDFParseError(error_msg.str());
+		}
+
+		try{
+			y->radius = boost::lexical_cast<double>(xml->Attribute("radius"));
+		} catch (boost::bad_lexical_cast &e) {
+			std::ostringstream error_msg;
+			error_msg << "Error while parsing link '" << getParentLinkName(xml)
+					  << "': capsule radius [" << xml->Attribute("radius")
+					  << "] is not a valid float: " << e.what() << "!";
+			throw URDFParseError(error_msg.str());
+		}
+	} else {
+		std::ostringstream error_msg;
+		error_msg << "Error while parsing link '" << getParentLinkName(xml)
+				  << "': Capsule shape must have both length and radius attributes!";
+		throw URDFParseError(error_msg.str());
+	}
+
+	return y;
+}
 
 std::shared_ptr<Mesh> Mesh::fromXml(TiXmlElement *xml) {
 	std::shared_ptr<Mesh> m = std::make_shared<Mesh>();

@@ -12,6 +12,7 @@ namespace urdf {
 		SPHERE,
 		BOX,
 		CYLINDER,
+        CAPSULE,
 		MESH
 	};
 
@@ -65,6 +66,21 @@ namespace urdf {
 
 			static std::shared_ptr<Cylinder> fromXml(TiXmlElement* xml);
 	};
+    
+    class Capsule : public Geometry {
+        public:
+            double length;
+            double radius;
+    
+            void clear() {
+                length = 0;
+                radius = 0;
+            }
+            
+            Capsule() : length(0.), radius(0.), Geometry(GeometryType::CAPSULE) {}
+            
+            static std::shared_ptr<Capsule> fromXml(TiXmlElement* xml);
+    };
 
 	class Mesh : public Geometry {
 		public:
