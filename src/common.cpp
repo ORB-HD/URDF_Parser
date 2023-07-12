@@ -1,6 +1,6 @@
 #include "urdf/common.h"
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
+
+#include "misc/stringtool.h"
 
 using namespace urdf;
 using namespace std;
@@ -9,16 +9,14 @@ using namespace std;
 
 Vector3 Vector3::fromVecStr(const string& vector_str) {
 	Vector3 vec;
-
-	vector<string> pieces;
 	vector<double> values;
 
-	boost::split( pieces, vector_str, boost::is_any_of(" "));
+    vector<string> pieces = StringTool::split(vector_str, " ");
 	for (unsigned int i = 0; i < pieces.size(); ++i){
 		if (pieces[i] != ""){
 			try {
-				values.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
-			} catch (boost::bad_lexical_cast &e) {
+				values.push_back(StringTool::castStringToDouble(pieces[i].c_str()));
+			} catch (StringToolException &) {
 				throw URDFParseError("Error not able to parse component (" + pieces[i] + ") to a double (while parsing a vector value)");
 			}
 		}
@@ -155,15 +153,14 @@ Rotation Rotation::fromRpyStr(const string &rotation_str) {
 // ------------------- Color Implementation -------------------
 
 Color Color::fromColorStr(const std::string &vector_str) {
-	std::vector<std::string> pieces;
 	std::vector<float> values;
 
-	boost::split(pieces, vector_str, boost::is_any_of(" "));
+    vector<string> pieces = StringTool::split(vector_str, " ");
 	for (int i = 0; i < pieces.size(); i++) {
 		if (!pieces[i].empty()) {
 			try {
-				values.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
-			} catch (boost::bad_lexical_cast &e) {
+				values.push_back(StringTool::castStringToFloat(pieces[i].c_str()));
+			} catch (StringToolException &e) {
 				std::ostringstream error_msg;
 				error_msg << "Error parsing Color value " << i
 						  << " in color value string (" << vector_str
